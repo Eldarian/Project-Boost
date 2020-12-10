@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class Rocket : MonoBehaviour
 {
-    private float rotationSpeed = 100;
-    [SerializeField] private float force = 50;
+    [SerializeField] float thrustForce = 50;
+    [SerializeField] float rcsForce = 100;
     private Rigidbody rigidbody;
     AudioSource audio;
 
@@ -30,13 +30,11 @@ public class Rocket : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
-            print("Rotating left");
-            transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
+            transform.Rotate(Vector3.forward, rcsForce * Time.deltaTime);
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            print("Rotating right");
-            transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime * -1);
+            transform.Rotate(Vector3.forward, rcsForce * Time.deltaTime * -1);
 
         }
 
@@ -47,8 +45,7 @@ public class Rocket : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            print("Space pressed");
-            rigidbody.AddRelativeForce(Vector3.up * force, ForceMode.Force);
+            rigidbody.AddRelativeForce(Vector3.up * thrustForce, ForceMode.Force);
             if (!audio.isPlaying)
             {
                 audio.Play();
@@ -58,6 +55,27 @@ public class Rocket : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Space))
         {
             audio.Stop();
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        switch(collision.gameObject.tag)
+        {
+            case "Friendly":
+                print("Friend"); //TODO remove
+                break;
+            case "Finish":
+                print("Well Done!"); //TODO remove
+                break;
+            case "Fuel":
+                print("Fuel"); //TODO remove
+                break;
+            default:
+                print("Dead"); //TODO remove
+                Destroy(gameObject);
+                break;
+
         }
     }
 }
